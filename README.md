@@ -1,0 +1,1 @@
+# unity-scriptable-object-reactive-variables
