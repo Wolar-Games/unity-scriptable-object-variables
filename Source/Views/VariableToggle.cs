@@ -21,7 +21,7 @@ namespace WolarGames.Variables.Views
             variable.AsObservable().Subscribe(value =>
             {
                 toggle.isOn = value;
-            });
+            }).AddTo(this);
         }
     }
 }
