@@ -1,4 +1,5 @@
 ﻿using UniRx;
+using UnityEngine.Assertions;
 
 namespace WolarGames.Variables
 {
@@ -22,7 +23,10 @@ namespace WolarGames.Variables
 
         public IObservable<T> Value
         {
-            get { return UseConstant ? Observable.Return(ConstantValue) : Variable.CurrentValue.AsObservable(); }
+            get {
+                Assert.IsTrue(UseConstant || Variable != null, "Using variable value with no variable assigned");
+                return UseConstant ? Observable.Return(ConstantValue) : Variable.CurrentValue.AsObservable(); 
+            }
         }
 
         public static implicit operator T(Reference<T> reference) {
