@@ -4,6 +4,7 @@ using UnityEngine.Assertions;
 namespace WolarGames.Variables
 {
     /// Generic base variable reference that all other variable references inherit
+    /// Can (should) only be used for getting values, not setting them
     public abstract class Reference<T>
     {
         public bool UseConstant = true;

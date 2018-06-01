@@ -18,4 +18,12 @@ namespace WolarGames.Variables
     [CustomPropertyDrawer(typeof(StringReference))]
     public class StringReferenceDrawer : ReferenceDrawer
     { }
+
+    [CustomPropertyDrawer(typeof(Vector3Reference))]
+    public class Vector3ReferenceDrawer : ReferenceDrawer
+    { }
+
+    [CustomPropertyDrawer(typeof(Vector2Reference))]
+    public class Vector2ReferenceDrawer : ReferenceDrawer
+    { }
 }

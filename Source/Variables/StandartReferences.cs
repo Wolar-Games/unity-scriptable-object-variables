@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace WolarGames.Variables
 {
@@ -49,6 +50,32 @@ namespace WolarGames.Variables
         public StringVariable VariableReference;
 
         public override Variable<string> Variable
+        {
+            get {
+                return VariableReference;
+            }
+        }
+    }
+
+    [Serializable]
+    public class Vector3Reference : Reference<Vector3>
+    {
+        public Vector3Variable VariableReference;
+
+        public override Variable<Vector3> Variable
+        {
+            get {
+                return VariableReference;
+            }
+        }
+    }
+
+    [Serializable]
+    public class Vector2Reference : Reference<Vector2>
+    {
+        public Vector2Variable VariableReference;
+
+        public override Variable<Vector2> Variable
         {
             get {
                 return VariableReference;

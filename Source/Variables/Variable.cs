@@ -2,6 +2,7 @@
 using UnityEngine;
 using WolarGames.Variables.Utils;
 using UniRx;
+using System.Collections.Generic;
 
 namespace WolarGames.Variables
 {
@@ -23,7 +24,8 @@ namespace WolarGames.Variables
                 return _currentValue;
             }
             set {
-                if (!_currentValue.Equals(value)) {
+                // TODO: Make the comparer setable
+                if (!EqualityComparer<T>.Default.Equals(_currentValue, value)) {
                     _currentValue = value;
                     if (_publisher != null) {
                         _publisher.OnNext(value);

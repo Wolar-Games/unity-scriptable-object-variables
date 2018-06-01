@@ -19,4 +19,12 @@ namespace WolarGames.Variables
     [CreateAssetMenu(menuName = "Variables/String")]
     public class StringVariable : Variable<string>
     { }
+
+    [CreateAssetMenu(menuName = "Variables/Vector3")]
+    public class Vector3Variable : Variable<Vector3>
+    { }
+
+    [CreateAssetMenu(menuName = "Variables/Vector2")]
+    public class Vector2Variable : Variable<Vector2>
+    { }
 }
