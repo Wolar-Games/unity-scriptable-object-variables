@@ -15,10 +15,10 @@ namespace WolarGames.Variables.Views
             var toggle = GetComponent<Toggle>();
             toggle.OnValueChangedAsObservable().Subscribe(value =>
             {
-                variable.SetValue(value);
+                variable.CurrentValue = value;
             }).AddTo(this);
 
-            variable.CurrentValue.Subscribe(value =>
+            variable.AsObservable().Subscribe(value =>
             {
                 toggle.isOn = value;
             });

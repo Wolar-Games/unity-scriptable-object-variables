@@ -25,12 +25,12 @@ namespace WolarGames.Variables
         {
             get {
                 Assert.IsTrue(UseConstant || Variable != null, "Using variable value with no variable assigned");
-                return UseConstant ? Observable.Return(ConstantValue) : Variable.CurrentValue.AsObservable(); 
+                return UseConstant ? Observable.Return(ConstantValue) : Variable.AsObservable(); 
             }
         }
 
         public static implicit operator T(Reference<T> reference) {
-            return reference.UseConstant ? reference.ConstantValue : reference.Variable.CurrentValue.Value;
+            return reference.UseConstant ? reference.ConstantValue : reference.Variable.CurrentValue;
         }
     }
 }

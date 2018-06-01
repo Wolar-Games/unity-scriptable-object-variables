@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.Assertions;
+using WolarGames.Variables.Utils;
 using UniRx;
 
 namespace WolarGames.Variables
@@ -15,25 +15,46 @@ namespace WolarGames.Variables
         /// Default value of the variable, exposed in editor if T is serializable, should not be changed from game code without a good reason
         public T DefaultValue;
 
+        private T _currentValue;
         /// Current value of the variable
-        [NonSerialized]
-        public ReactiveProperty<T> CurrentValue = new ReactiveProperty<T>();
+        [ExposeProperty]
+        public T CurrentValue {
+            get {
+                return _currentValue;
+            }
+            set {
+                if (!_currentValue.Equals(value)) {
+                    _currentValue = value;
+                    if (_publisher != null) {
+                        _publisher.OnNext(value);
+                    }
+                }
+            }
+        }
 
-        public void SetValue(T value) {
-            CurrentValue.Value = value;
+        [NonSerialized]
+        private BehaviorSubject<T> _publisher;
+
+        public IObservable<T> AsObservable() {
+            if (_publisher == null) {
+                _publisher = new BehaviorSubject<T>(_currentValue);
+            }
+            return _publisher;
         }
 
         public void SetValue(Variable<T> value) {
-            CurrentValue.Value = value.CurrentValue.Value;
+            CurrentValue = value.CurrentValue;
         }
 
         private void OnEnable() {
-            CurrentValue = new ReactiveProperty<T>(DefaultValue);
+            CurrentValue = DefaultValue;
         }
 
         public static implicit operator T(Variable<T> variable) {
-            Assert.IsNotNull(variable);
-            return variable.CurrentValue.Value;
+            if (variable == null) {
+                return default(T);
+            }
+            return variable.CurrentValue;
         }
     }
 }
