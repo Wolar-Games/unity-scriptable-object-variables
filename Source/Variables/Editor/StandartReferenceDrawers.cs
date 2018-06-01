@@ -3,7 +3,6 @@
 namespace WolarGames.Variables
 {
     // Concrete implementations to work with Unity editor
-
     [CustomPropertyDrawer(typeof(BoolReference))]
     public class BoolReferenceDrawer : ReferenceDrawer
     { }
