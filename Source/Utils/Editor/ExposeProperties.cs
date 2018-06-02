@@ -52,6 +52,11 @@ namespace WolarGames.Variables.Utils
                     var newValue = EditorGUILayout.EnumPopup(field.Name, oldValue, emptyOptions);
                     if (oldValue != newValue)
                         field.SetValue(newValue);
+                } else if (field.Type == SerializedPropertyType.ObjectReference) {
+                    UnityEngine.Object oldValue = (UnityEngine.Object)field.GetValue();
+                    UnityEngine.Object newValue = EditorGUILayout.ObjectField(field.Name, oldValue, field.Info.PropertyType, true);
+                    if (oldValue != newValue)
+                        field.SetValue(newValue);
                 }
                 EditorGUILayout.EndHorizontal();
             }
@@ -98,6 +103,11 @@ namespace WolarGames.Variables.Utils
         MethodInfo getter;
         MethodInfo setter;
 
+        public PropertyInfo Info
+        {
+            get { return info; }
+        }
+
         public SerializedPropertyType Type
         {
             get { return type; }
@@ -118,7 +128,10 @@ namespace WolarGames.Variables.Utils
         }
 
         public object GetValue() { return getter.Invoke(obj, null); }
-        public void SetValue(object value) { setter.Invoke(obj, new[] { value }); }
+        public void SetValue(object value) { 
+            Undo.RecordObject(obj as UnityEngine.Object, "Exposed property changed");
+            setter.Invoke(obj, new[] { value }); 
+        }
 
         public static bool GetPropertyType(PropertyInfo info, out SerializedPropertyType propertyType) {
             Type type = info.PropertyType;
@@ -137,6 +150,10 @@ namespace WolarGames.Variables.Utils
                 propertyType = SerializedPropertyType.Vector3;
             else if (type.IsEnum)
                 propertyType = SerializedPropertyType.Enum;
+            else if (typeof(MonoBehaviour).IsAssignableFrom(type))
+                propertyType = SerializedPropertyType.ObjectReference;
+            else if (typeof(ScriptableObject).IsAssignableFrom(type)) 
+                propertyType = SerializedPropertyType.ObjectReference;
             return propertyType != SerializedPropertyType.Generic;
         }
     }

@@ -9,16 +9,16 @@ namespace WolarGames.Variables
     [CustomEditor(typeof(Variable<>))]
     public class VariableDrawer<T> : Editor
     {
-        private Variable<T> m_Instance;
-        private PropertyField[] m_fields;
+        private Variable<T> _target;
+        private PropertyField[] _fields;
 
         private IDisposable _disposable;
 
         public void OnEnable() {
-            m_Instance = target as Variable<T>;
-            m_fields = ExposeProperties.GetProperties(m_Instance);
+            _target = target as Variable<T>;
+            _fields = ExposeProperties.GetProperties(_target);
 
-            _disposable = m_Instance.AsObservable().Subscribe(value => {
+            _disposable = _target.AsObservable().Subscribe(value => {
                 Repaint();
             });
         }
@@ -32,15 +32,15 @@ namespace WolarGames.Variables
 
         public override void OnInspectorGUI() {
 
-            if (m_Instance == null)
+            if (_target == null)
                 return;
 
             DrawDefaultInspector();
-            ExposeProperties.Expose(m_fields);
+            ExposeProperties.Expose(_fields);
 
-            if (!m_Instance.CurrentValue.Equals(m_Instance.DefaultValue)) {
+            if (!_target.CurrentValue.Equals(_target.DefaultValue)) {
                 if (GUILayout.Button("Current -> Default")) {
-                    m_Instance.DefaultValue = m_Instance.CurrentValue;
+                    _target.DefaultValue = _target.CurrentValue;
                 }
             }
         }
