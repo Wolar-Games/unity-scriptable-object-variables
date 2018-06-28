@@ -22,7 +22,7 @@ namespace WolarGames.Variables
             ConstantValue = value;
         }
 
-        public IObservable<T> Value
+        public IObservable<T> AsObservable
         {
             get {
                 Assert.IsTrue(UseConstant || Variable != null, "Using variable value with no variable assigned");
@@ -30,8 +30,17 @@ namespace WolarGames.Variables
             }
         }
 
-        public static implicit operator T(Reference<T> reference) {
-            return reference.UseConstant ? reference.ConstantValue : reference.Variable.CurrentValue;
+        public T Value
+        {
+            get
+            {
+                return UseConstant ? ConstantValue : Variable.CurrentValue;;                
+            }
+        }
+
+        public static implicit operator T(Reference<T> reference)
+        {
+            return reference.Value;
         }
     }
 }

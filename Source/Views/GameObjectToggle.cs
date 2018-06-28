@@ -12,7 +12,7 @@ namespace WolarGames.Variables.Views
         public bool hideOnToggle;
 
         private void Awake() {
-            variable.Value.Subscribe((bool value) =>
+            variable.AsObservable.Subscribe((bool value) =>
             {
                 gameObject.SetActive(!hideOnToggle && value || hideOnToggle && !value);
             }).AddTo(this);
