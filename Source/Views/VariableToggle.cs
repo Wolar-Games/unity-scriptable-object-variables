@@ -9,16 +9,16 @@ namespace WolarGames.Variables.Views
     [RequireComponent(typeof(Toggle))]
     public class VariableToggle : MonoBehaviour
     {
-        public BoolVariable variable;
+        public BoolVariable Variable;
 
         void Start() {
             var toggle = GetComponent<Toggle>();
             toggle.OnValueChangedAsObservable().Subscribe(value =>
             {
-                variable.CurrentValue = value;
+                Variable.CurrentValue = value;
             }).AddTo(this);
 
-            variable.AsObservable().Subscribe(value =>
+            Variable.AsObservable().Subscribe(value =>
             {
                 toggle.isOn = value;
             }).AddTo(this);

@@ -22,12 +22,10 @@ namespace WolarGames.Variables
             ConstantValue = value;
         }
 
-        public IObservable<T> AsObservable
+        public IObservable<T> AsObservable()
         {
-            get {
-                Assert.IsTrue(UseConstant || Variable != null, "Using variable value with no variable assigned");
-                return UseConstant ? Observable.Return(ConstantValue) : Variable.AsObservable(); 
-            }
+            Assert.IsTrue(UseConstant || Variable != null, "Using variable value with no variable assigned");
+            return UseConstant ? Observable.Return(ConstantValue) : Variable.AsObservable(); 
         }
 
         public T Value

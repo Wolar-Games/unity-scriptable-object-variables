@@ -6,15 +6,15 @@ namespace WolarGames.Variables.Views
 {
     public class GameObjectToggle : MonoBehaviour
     {
-        public BoolReference variable;
+        public BoolReference Variable;
 
         /// Should this be hidden when toggle is on
-        public bool hideOnToggle;
+        public bool HideOnToggle;
 
         private void Awake() {
-            variable.AsObservable.Subscribe((bool value) =>
+            Variable.AsObservable().Subscribe((bool value) =>
             {
-                gameObject.SetActive(!hideOnToggle && value || hideOnToggle && !value);
+                gameObject.SetActive(!HideOnToggle && value || HideOnToggle && !value);
             }).AddTo(this);
         }
     }
