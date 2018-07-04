@@ -1,7 +1,9 @@
 ﻿using System;
 using UnityEngine;
 using WolarGames.Variables.Utils;
+#if REACTIVE_VARIABLE_RX_ENABLED
 using UniRx;
+#endif
 using System.Collections.Generic;
 
 namespace WolarGames.Variables
@@ -27,13 +29,20 @@ namespace WolarGames.Variables
                 // TODO: Make the comparer setable
                 if (!EqualityComparer<T>.Default.Equals(_currentValue, value)) {
                     _currentValue = value;
+#if REACTIVE_VARIABLE_RX_ENABLED
                     if (_publisher != null) {
                         _publisher.OnNext(value);
                     }
+#else
+                    if (OnValueChanged != null) {
+                        OnValueChanged(value);
+                    }
+#endif
                 }
             }
         }
-
+        
+#if REACTIVE_VARIABLE_RX_ENABLED
         [NonSerialized]
         private BehaviorSubject<T> _publisher;
 
@@ -43,6 +52,9 @@ namespace WolarGames.Variables
             }
             return _publisher;
         }
+#else
+        public Action<T> OnValueChanged;
+#endif
 
         public void SetValue(Variable<T> value) {
             CurrentValue = value.CurrentValue;

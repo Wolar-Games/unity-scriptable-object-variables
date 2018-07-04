@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
+#if REACTIVE_VARIABLE_RX_ENABLED
 using UniRx;
-using WolarGames.Variables;
+#endif
 
 namespace WolarGames.Variables.Views
 {
@@ -12,10 +13,13 @@ namespace WolarGames.Variables.Views
         public bool HideOnToggle;
 
         private void Awake() {
+            
+#if REACTIVE_VARIABLE_RX_ENABLED
             Variable.AsObservable().Subscribe((bool value) =>
             {
                 gameObject.SetActive(!HideOnToggle && value || HideOnToggle && !value);
             }).AddTo(this);
+#endif
         }
     }
 }

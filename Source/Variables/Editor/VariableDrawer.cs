@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using WolarGames.Variables.Utils;
+#if REACTIVE_VARIABLE_RX_ENABLED
 using UniRx;
+#endif
 using System;
 
 namespace WolarGames.Variables
@@ -17,17 +19,30 @@ namespace WolarGames.Variables
         public void OnEnable() {
             _target = target as Variable<T>;
             _fields = ExposeProperties.GetProperties(_target);
-
+            
+#if REACTIVE_VARIABLE_RX_ENABLED
             _disposable = _target.AsObservable().Subscribe(value => {
                 Repaint();
             });
+#else
+            _target.OnValueChanged += HandleValueChanged;
+#endif
         }
 
         public void OnDisable() {
+#if REACTIVE_VARIABLE_RX_ENABLED
             if (_disposable != null) {
                 _disposable.Dispose();
                 _disposable = null;
             }
+#else
+            _target.OnValueChanged -= HandleValueChanged;
+#endif
+        }
+
+        private void HandleValueChanged(T value)
+        {
+            Repaint();
         }
 
         public override void OnInspectorGUI() {

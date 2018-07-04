@@ -34,7 +34,7 @@ namespace WolarGames.Variables.Utils
         private const string EditorStorePathKey = "Wolargames.Variables.EditorStorePath";
         private const string ImportingKey = "Wolargames.Variables.Importing";
         
-        [MenuItem("Tools/Reactive Variables/Create New")]
+        [MenuItem("Tools/Reactive Variables/Create New", false, 1)]
         static void CreateWizardLocal()
         {
             CreateNewWizard(new []
@@ -43,7 +43,7 @@ namespace WolarGames.Variables.Utils
             });
         }
 
-        [MenuItem("Tools/Reactive Variables/Create New (All assemblies)")]
+        [MenuItem("Tools/Reactive Variables/Create New (All assemblies)", false, 2)]
         static void CreateWizardAllAssemblies()
         {
             CreateNewWizard(AppDomain.CurrentDomain.GetAssemblies());

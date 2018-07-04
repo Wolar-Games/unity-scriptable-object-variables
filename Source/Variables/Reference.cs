@@ -1,4 +1,7 @@
-﻿using UniRx;
+﻿#if REACTIVE_VARIABLE_RX_ENABLED
+using UniRx;
+#endif
+using System;
 using UnityEngine.Assertions;
 
 namespace WolarGames.Variables
@@ -22,12 +25,32 @@ namespace WolarGames.Variables
             ConstantValue = value;
         }
 
+        #if REACTIVE_VARIABLE_RX_ENABLED
         public IObservable<T> AsObservable()
         {
             Assert.IsTrue(UseConstant || Variable != null, "Using variable value with no variable assigned");
             return UseConstant ? Observable.Return(ConstantValue) : Variable.AsObservable(); 
         }
-
+        #else
+        public Action<T> OnValueChanged
+        {
+            get
+            {
+                if (UseConstant)
+                {
+                    return new Action<T>(_ =>
+                    {
+                        
+                    });
+                }
+                else
+                {
+                    return Variable.OnValueChanged;
+                }
+            }
+        }
+        #endif
+    
         public T Value
         {
             get

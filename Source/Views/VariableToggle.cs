@@ -1,8 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+#if REACTIVE_VARIABLE_RX_ENABLED
 using UniRx;
+#endif
 
 namespace WolarGames.Variables.Views
 {
@@ -13,6 +13,8 @@ namespace WolarGames.Variables.Views
 
         void Start() {
             var toggle = GetComponent<Toggle>();
+            
+#if REACTIVE_VARIABLE_RX_ENABLED
             toggle.OnValueChangedAsObservable().Subscribe(value =>
             {
                 Variable.CurrentValue = value;
@@ -22,6 +24,7 @@ namespace WolarGames.Variables.Views
             {
                 toggle.isOn = value;
             }).AddTo(this);
+#endif
         }
     }
 }
