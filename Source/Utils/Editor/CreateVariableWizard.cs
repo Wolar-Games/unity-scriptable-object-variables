@@ -187,6 +187,8 @@ namespace WolarGames.Variables.Utils
             {
                 Debug.LogError(e);
             }
+            
+            AssetDatabase.Refresh();
         }
     }
 }

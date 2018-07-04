@@ -1,5 +1,5 @@
 using UnityEngine;
-using WolarGames.Variable;
+using WolarGames.Variables;
 
 namespace #NAMESPACE#
 {
