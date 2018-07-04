@@ -26,11 +26,13 @@ namespace WolarGames.Variables.Utils
 
         private int _selectedIndex = 0;
         private float _timeSinceLastChange = 0;
+        public bool ImportAfterCreating = true;
         
         private const float TimeSinceLastChangeTreshold = 0.5f;
         
         private const string StorePathKey = "Wolargames.Variables.StorePath";
         private const string EditorStorePathKey = "Wolargames.Variables.EditorStorePath";
+        private const string ImportingKey = "Wolargames.Variables.Importing";
         
         [MenuItem("Tools/Reactive Variables/Create New")]
         static void CreateWizardLocal()
@@ -52,6 +54,7 @@ namespace WolarGames.Variables.Utils
             var wizard = DisplayWizard<CreateVariableWizard>("Create Variable", "Create");
             wizard.StorePath = EditorPrefs.GetString(StorePathKey, null);
             wizard.StoreEditorPath = EditorPrefs.GetString(EditorStorePathKey, null);
+            wizard.ImportAfterCreating = EditorPrefs.GetBool(ImportingKey, true);
 
             var allTypes = new List<Type>();
             foreach (var type in assemblies)
@@ -152,6 +155,13 @@ namespace WolarGames.Variables.Utils
                 isValid = false;
             }
 
+            var newValue = GUILayout.Toggle(ImportAfterCreating, "Import after created");
+            if (newValue != ImportAfterCreating)
+            {
+                ImportAfterCreating = newValue;
+                EditorPrefs.SetBool(ImportingKey, ImportAfterCreating);
+            }
+            
             return somethingChanged;
         }
 
@@ -186,7 +196,9 @@ namespace WolarGames.Variables.Utils
                 if (path.StartsWith(Application.dataPath)) {
                     var relativePath =  "Assets" + path.Substring(Application.dataPath.Length);
                     Debug.LogFormat("Created file at path: {0}", relativePath);
-                    AssetDatabase.ImportAsset(relativePath, ImportAssetOptions.Default);
+                    if (ImportAfterCreating) {
+                        AssetDatabase.ImportAsset(relativePath, ImportAssetOptions.Default);
+                    }
                 }
             }
             catch (Exception e)
