@@ -1,0 +1,9 @@
+using UnityEditor;
+using WolarGames.Variable;
+
+namespace #NAMESPACE#
+{
+    [CustomPropertyDrawer(typeof(#VARIABLE#Reference))]
+    public class #VARIABLE#ReferenceDrawer : ReferenceDrawer
+    { }
+}

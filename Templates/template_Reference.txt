@@ -1,0 +1,18 @@
+using System;
+using WolarGames.Variable;
+
+namespace #NAMESPACE#
+{
+    [Serializable]
+    public class #VARIABLE#Reference : Reference<#VARIABLE#>
+    {
+        public #VARIABLE#Variable VariableReference;
+
+        public override Variable<#VARIABLE#> Variable
+        {
+            get {
+                return VariableReference;
+            }
+        }
+    }
+}

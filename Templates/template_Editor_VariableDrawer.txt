@@ -1,0 +1,9 @@
+using UnityEditor;
+using WolarGames.Variable;
+
+namespace #NAMESPACE#
+{
+    [CustomEditor(typeof(#VARIABLE#Variable))]
+    public class #VARIABLE#VariableDrawer : VariableDrawer<#VARIABLE#>
+    { }
+}

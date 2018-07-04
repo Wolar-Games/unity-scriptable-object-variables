@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Assertions;
+using _Scripts.Behaviour_Desinger.Actions.Combat;
 
 namespace WolarGames.Variables.Utils
 {
@@ -74,7 +77,7 @@ namespace WolarGames.Variables.Utils
                 return;
             }
             
-            // TODO: Create class here
+            CreateFiles();
         }
 
         protected override bool DrawWizardGUI()
@@ -90,9 +93,12 @@ namespace WolarGames.Variables.Utils
             if (GUILayout.Button("Select"))
             {
                 string path = EditorUtility.OpenFolderPanel("Select folder", "", "");
-                EditorPrefs.SetString(StorePathKey, path);
-                StorePath = path;
-                somethingChanged = true;
+                if (path != null)
+                {
+                    EditorPrefs.SetString(StorePathKey, path);
+                    StorePath = path;
+                    somethingChanged = true;
+                }
             }
             EditorGUILayout.EndHorizontal();
 
@@ -106,9 +112,12 @@ namespace WolarGames.Variables.Utils
             if (GUILayout.Button("Select"))
             {
                 string path = EditorUtility.OpenFolderPanel("Select folder", "", "");
-                EditorPrefs.SetString(EditorStorePathKey, path);
-                StoreEditorPath = path;
-                somethingChanged = true;
+                if (path != null)
+                {
+                    EditorPrefs.SetString(EditorStorePathKey, path);
+                    StoreEditorPath = path;
+                    somethingChanged = true;
+                }
             }
             EditorGUILayout.EndHorizontal();
 
@@ -144,6 +153,40 @@ namespace WolarGames.Variables.Utils
             }
 
             return somethingChanged;
+        }
+
+        private void CreateFiles()
+        {
+            CreateScript("template_Variable", StorePath, "Variable");
+            CreateScript("template_Reference", StorePath, "Reference");
+            CreateScript("template_Editor_VariableDrawer", StoreEditorPath, "VariableDrawer");
+            CreateScript("template_Editor_ReferenceDrawer", StoreEditorPath, "ReferenceDrawer");
+        }
+
+        private void CreateScript(string templaName, string targetFolder, string filenameSuffix)
+        {
+            Assert.IsTrue(Directory.Exists(targetFolder), targetFolder + " does not exist");
+
+            var guids = AssetDatabase.FindAssets(templaName);
+            Assert.IsTrue(guids.Length > 0, string.Format("Missing template: \"{0}\"", templaName));
+            Assert.IsTrue(guids.Length < 2, string.Format("To many templates for name: \"{0}\"", templaName));
+            
+            var firstGuid = guids.First();
+            var templatePath = AssetDatabase.GUIDToAssetPath(firstGuid);
+            try
+            {
+                var type = _filteredTypes.ElementAt(_selectedIndex);
+                var template = File.ReadAllText(templatePath);
+                template = template.Replace("#NAMESPACE#", type.Namespace);
+                template = template.Replace("#VARIABLE#", type.Name);
+                var filename = string.Format("{0}{1}.cs", type.Name, filenameSuffix);
+                var path = Path.Combine(targetFolder, filename);
+                File.WriteAllText(path, template);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
         }
     }
 }

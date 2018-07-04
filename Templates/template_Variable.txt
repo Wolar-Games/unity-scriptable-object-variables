@@ -1,0 +1,9 @@
+using UnityEngine;
+using WolarGames.Variable;
+
+namespace #NAMESPACE#
+{
+    [CreateAssetMenu(menuName = "Variables/#VARIABLE#")]
+    public class #VARIABLE#Variable : Variable<#VARIABLE#>
+    { }
+}
