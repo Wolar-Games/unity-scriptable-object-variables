@@ -1,4 +1,8 @@
-﻿using UnityEditor;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using UnityEditor;
 using UnityEngine;
 
 namespace WolarGames.Variables.Utils
@@ -10,15 +14,50 @@ namespace WolarGames.Variables.Utils
         public string StorePath;
         public string StoreEditorPath;
 
+        public IEnumerable<Type> AllTypes;
+
+        private string _newString;
+        private string _filterString;
+        private IEnumerable<Type> _filteredTypes;
+        private string[] _filteredTypeNames;
+
+        private int _selectedIndex = 0;
+        private float _timeSinceLastChange = 0;
+        
+        private const float TimeSinceLastChangeTreshold = 0.5f;
+        
         private const string StorePathKey = "Wolargames.Variables.StorePath";
         private const string EditorStorePathKey = "Wolargames.Variables.EditorStorePath";
         
         [MenuItem("Tools/Reactive Variables/Create New")]
-        static void CreateWizard()
+        static void CreateWizardLocal()
+        {
+            CreateNewWizard(new []
+            {
+                typeof(IntVariable).Assembly
+            });
+        }
+
+        [MenuItem("Tools/Reactive Variables/Create New (All assemblies)")]
+        static void CreateWizardAllAssemblies()
+        {
+            CreateNewWizard(AppDomain.CurrentDomain.GetAssemblies());
+        }
+
+        private static void CreateNewWizard(Assembly[] assemblies)
         {
             var wizard = DisplayWizard<CreateVariableWizard>("Create Variable", "Create");
             wizard.StorePath = EditorPrefs.GetString(StorePathKey, null);
             wizard.StoreEditorPath = EditorPrefs.GetString(EditorStorePathKey, null);
+
+            var allTypes = new List<Type>();
+            foreach (var type in assemblies)
+            {
+                var types = type.GetTypes();
+                allTypes.AddRange(types);
+            }
+
+            wizard.AllTypes = allTypes.OrderBy(type => type.Name);
         }
 
         void OnWizardCreate()
@@ -40,34 +79,71 @@ namespace WolarGames.Variables.Utils
 
         protected override bool DrawWizardGUI()
         {
-            // TODO: selector of class
+            var somethingChanged = false;
             
             // Path to folder
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.BeginVertical();
-            GUILayout.Label("Where to store class:");
-            GUILayout.Label(StorePath ?? "Please pick" );
+            GUILayout.Label("Where to store class:", EditorStyles.boldLabel);
+            GUILayout.Label(string.IsNullOrEmpty(StorePath) ? "Please pick" : StorePath );
             EditorGUILayout.EndVertical();
             if (GUILayout.Button("Select"))
             {
-                // TODO: Selector of path
-                Debug.Log("Select path");
+                string path = EditorUtility.OpenFolderPanel("Select folder", "", "");
+                EditorPrefs.SetString(StorePathKey, path);
+                StorePath = path;
+                somethingChanged = true;
             }
             EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space();
             
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.BeginVertical();
-            GUILayout.Label("Where to store editor class:");
-            GUILayout.Label(StoreEditorPath  ?? "Please pick");
+            GUILayout.Label("Where to store editor class:", EditorStyles.boldLabel);
+            GUILayout.Label(string.IsNullOrEmpty(StoreEditorPath) ? "Please pick" : StoreEditorPath);
             EditorGUILayout.EndVertical();
             if (GUILayout.Button("Select"))
             {
-                // TODO: Selector of path
-                Debug.Log("Select path");
+                string path = EditorUtility.OpenFolderPanel("Select folder", "", "");
+                EditorPrefs.SetString(EditorStorePathKey, path);
+                StoreEditorPath = path;
+                somethingChanged = true;
             }
             EditorGUILayout.EndHorizontal();
-            
-            return false;
+
+            GUILayout.Label("Filter:", EditorStyles.boldLabel);
+            var newString = GUILayout.TextField(_newString);
+            if (newString != _newString)
+            {
+                _timeSinceLastChange = 0;
+                _newString = newString;
+            }
+
+            if ((_timeSinceLastChange >= TimeSinceLastChangeTreshold && _newString != _filterString))
+            {
+                _filterString = _newString;
+                if (_filterString.Length >= 3)
+                {
+                    _filteredTypes = AllTypes.Where(type => type.Name.Contains(_filterString));
+                    _filteredTypeNames = _filteredTypes.Select(type => type.Name).ToArray();
+                }
+            }
+
+            _timeSinceLastChange += Time.deltaTime;
+
+            if (_filterString != null && _filterString.Length >= 3 && _filteredTypeNames != null)
+            {
+                _selectedIndex = EditorGUILayout.Popup("Class", _selectedIndex, _filteredTypeNames);
+                isValid = _filteredTypeNames.Length > 0;
+            }
+            else
+            {
+                GUILayout.Label("Please enter at leasr 3 characters into filter");
+                isValid = false;
+            }
+
+            return somethingChanged;
         }
     }
 }
