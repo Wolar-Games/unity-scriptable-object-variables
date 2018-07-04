@@ -38,7 +38,7 @@ namespace WolarGames.Variables
             DrawDefaultInspector();
             ExposeProperties.Expose(_fields);
 
-            if (!_target.CurrentValue.Equals(_target.DefaultValue)) {
+            if (_target != null && _target.CurrentValue != null && _target.DefaultValue != null && !_target.CurrentValue.Equals(_target.DefaultValue)) {
                 if (GUILayout.Button("Current -> Default")) {
                     _target.DefaultValue = _target.CurrentValue;
                 }

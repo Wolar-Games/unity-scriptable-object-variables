@@ -182,13 +182,17 @@ namespace WolarGames.Variables.Utils
                 var filename = string.Format("{0}{1}.cs", type.Name, filenameSuffix);
                 var path = Path.Combine(targetFolder, filename);
                 File.WriteAllText(path, template);
+                
+                if (path.StartsWith(Application.dataPath)) {
+                    var relativePath =  "Assets" + path.Substring(Application.dataPath.Length);
+                    Debug.LogFormat("Created file at path: {0}", relativePath);
+                    AssetDatabase.ImportAsset(relativePath, ImportAssetOptions.Default);
+                }
             }
             catch (Exception e)
             {
                 Debug.LogError(e);
             }
-            
-            AssetDatabase.Refresh();
         }
     }
 }
