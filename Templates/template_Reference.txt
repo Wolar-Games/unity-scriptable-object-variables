@@ -1,8 +1,8 @@
 using System;
 using WolarGames.Variables;
 
-namespace #NAMESPACE#
-{
+#NAMESPACE_KEYWORD# #NAMESPACE#
+#NAMESPACE_OPEN#
     [Serializable]
     public class #VARIABLE#Reference : Reference<#VARIABLE#>
     {
@@ -15,4 +15,4 @@ namespace #NAMESPACE#
             }
         }
     }
-}
+#NAMESPACE_CLOSE#

@@ -186,8 +186,23 @@ namespace WolarGames.Variables.Utils
             {
                 var type = _filteredTypes.ElementAt(_selectedIndex);
                 var template = File.ReadAllText(templatePath);
-                template = template.Replace("#NAMESPACE#", type.Namespace);
                 template = template.Replace("#VARIABLE#", type.Name);
+                
+                if (!string.IsNullOrEmpty(type.Namespace))
+                {
+                    template = template.Replace("#NAMESPACE#", type.Namespace);
+                    template = template.Replace("#NAMESPACE_KEYWORD#", "namespace");
+                    template = template.Replace("#NAMESPACE_OPEN#", "{");
+                    template = template.Replace("#NAMESPACE_CLOSE#", "}");
+                }
+                else
+                {
+                    template = template.Replace("#NAMESPACE#", string.Empty);
+                    template = template.Replace("#NAMESPACE_KEYWORD#", string.Empty);
+                    template = template.Replace("#NAMESPACE_OPEN#", string.Empty);
+                    template = template.Replace("#NAMESPACE_CLOSE#", string.Empty);
+                }
+                
                 var filename = string.Format("{0}{1}.cs", type.Name, filenameSuffix);
                 var path = Path.Combine(targetFolder, filename);
                 File.WriteAllText(path, template);
