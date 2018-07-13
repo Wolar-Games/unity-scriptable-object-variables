@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 #if REACTIVE_VARIABLE_RX_ENABLED
 using UniRx;
@@ -11,20 +11,44 @@ namespace WolarGames.Variables.Views
     {
         public BoolVariable Variable;
 
+        private Toggle _toggle;
+
         void Start() {
-            var toggle = GetComponent<Toggle>();
+            _toggle = GetComponent<Toggle>();
             
 #if REACTIVE_VARIABLE_RX_ENABLED
-            toggle.OnValueChangedAsObservable().Subscribe(value =>
-            {
-                Variable.CurrentValue = value;
-            }).AddTo(this);
+            _toggle.OnValueChangedAsObservable()
+                .Subscribe(HandleToggleValueChanged)
+                .AddTo(this);
 
-            Variable.AsObservable().Subscribe(value =>
-            {
-                toggle.isOn = value;
-            }).AddTo(this);
+            Variable.AsObservable()
+                .Subscribe(HandleValueChanged)
+                .AddTo(this);
+#else
+            _toggle.onValueChanged.AddListener(HandleToggleValueChanged);
+            Variable.OnValueChanged += HandleValueChanged;
+            HandleValueChanged(Variable.CurrentValue);
 #endif
+        }
+        
+#if !REACTIVE_VARIABLE_RX_ENABLED
+
+        private void OnDestroy()
+        {
+            _toggle.onValueChanged.RemoveListener(HandleToggleValueChanged);
+            Variable.OnValueChanged -= HandleValueChanged;
+        }
+
+#endif
+
+        private void HandleToggleValueChanged(bool value)
+        {
+            Variable.CurrentValue = value;
+        }
+        
+        private void HandleValueChanged(bool value)
+        {
+            _toggle.isOn = value;
         }
     }
 }
