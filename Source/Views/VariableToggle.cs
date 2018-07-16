@@ -17,17 +17,17 @@ namespace WolarGames.Variables.Views
             _toggle = GetComponent<Toggle>();
             
 #if REACTIVE_VARIABLE_RX_ENABLED
-            _toggle.OnValueChangedAsObservable()
-                .Subscribe(HandleToggleValueChanged)
-                .AddTo(this);
-
             Variable.AsObservable()
                 .Subscribe(HandleValueChanged)
                 .AddTo(this);
+            
+            _toggle.OnValueChangedAsObservable()
+                .Subscribe(HandleToggleValueChanged)
+                .AddTo(this);
 #else
+            HandleValueChanged(Variable.CurrentValue);        
             _toggle.onValueChanged.AddListener(HandleToggleValueChanged);
             Variable.OnValueChanged += HandleValueChanged;
-            HandleValueChanged(Variable.CurrentValue);
 #endif
         }
         
