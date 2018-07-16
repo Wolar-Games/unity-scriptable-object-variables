@@ -2,7 +2,7 @@
 
 namespace WolarGames.Variables
 {
-    [CustomEditor(typeof(FloatVariable))]
+    [CustomEditor(typeof(StringVariable))]
     public class StringVariableDrawer : VariableDrawer<string>
     { }
 }
