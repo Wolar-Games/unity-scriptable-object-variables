@@ -18,6 +18,10 @@ namespace WolarGames.Variables
         /// Default value of the variable, exposed in editor if T is serializable, should not be changed from game code without a good reason
         public T DefaultValue;
 
+        // If this is set to true, setting the same value will notify the observers
+        [HideInInspector]
+        public bool AllowValueRepeating;
+
         private T _currentValue;
         /// Current value of the variable
         [ExposeProperty]
@@ -27,7 +31,7 @@ namespace WolarGames.Variables
             }
             set {
                 // TODO: Make the comparer setable
-                if (!EqualityComparer<T>.Default.Equals(_currentValue, value)) {
+                if (AllowValueRepeating || !EqualityComparer<T>.Default.Equals(_currentValue, value)) {
                     _currentValue = value;
 #if REACTIVE_VARIABLE_RX_ENABLED
                     if (_publisher != null) {
