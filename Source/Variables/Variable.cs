@@ -11,10 +11,10 @@ namespace WolarGames.Variables
     /// Generic base variable that all other variables inherit
     public abstract class Variable<T> : ScriptableObject
     {
-#if UNITY_EDITOR
+        // This used to be #if UNITY_EDITOR but there was a problem with memory layout on desktop platforms
         [Multiline]
         public string DeveloperDescription = "";
-#endif
+
         /// Default value of the variable, exposed in editor if T is serializable, should not be changed from game code without a good reason
         public T DefaultValue;
 
